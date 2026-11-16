@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 def calculate_descriptive_stats(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -40,3 +41,29 @@ def display_descriptive_stats(stats: pd.DataFrame) -> None:
         print(f"Median:     {stats.loc[column, 'median']:.2f}")
         print(f"Minimum:    {stats.loc[column, 'min']:.2f}")
         print(f"Maximum:    {stats.loc[column, 'max']:.2f}")
+
+
+
+def simulate_disease(df, n_people=1000, seed=89):
+    """
+    Simulerar sjukdomsförekomst baserat på andelen sjuka
+    i det ursprungliga datasetet.
+
+    Returnerar den ursprungliga sjukdomsandelen,
+    antalet sjuka och andelen sjuka i simuleringen.
+    """
+
+    disease_probability = df["disease"].mean()                      # Beräknar andelen sjuka i det ursprungliga datasetet
+    
+    rng = np.random.default_rng(seed)                               # Skapar en slumpgenerator med ett fast seed
+
+    simulated_disease = rng.binomial(                               # Simulerar sjukdomsförekomst för ett angivet antal personer
+        n=1,
+        p=disease_probability,
+        size=n_people
+    )
+
+    simulated_count = simulated_disease.sum()                       # Beräknar antalet sjuka i simuleringen
+    simulated_probability = simulated_disease.mean()                # Beräknar andelen sjuka i simuleringen
+
+    return disease_probability, simulated_count, simulated_probability # Returnerar resultaten
