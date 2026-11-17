@@ -94,3 +94,41 @@ def plot_smoking_distribution(df: pd.DataFrame) -> tuple[Figure, Axes]:
     ax.set_axisbelow(True)
     fig.tight_layout()
     return fig, ax
+
+
+def plot_confidence_intervals(mean, normal_ci, bootstrap_ci):
+    """
+    Jämför 95-procentiga konfidensintervall
+    beräknade med normalapproximation och bootstrap.
+    """
+    fig, ax = plt.subplots(figsize=(9, 4))
+
+    intervals = [normal_ci, bootstrap_ci]                           # Anger konfidensintervallen
+    labels = ["Normalapproximation", "Bootstrap"]
+    colors = ["steelblue", "coral"]
+
+    for i, (lo, hi) in enumerate(intervals):                        # Ritar intervallen och markerar medelvärdet
+        ax.plot(
+            [lo, hi], [i, i],
+            color=colors[i],
+            linewidth=4
+        )
+
+        ax.scatter(mean, i, color="black", zorder=3)
+
+        ax.vlines(
+            [lo, hi],
+            ymin=i,
+            ymax=2,
+            colors=colors[i],
+            linestyles="dashed",
+            linewidth=1,
+            alpha=0.7
+        )
+    ax.set_ylim(2, -0.5)
+    ax.set_title("Jämförelse av 95 % konfidensintervall")
+    ax.set_xlabel("Systoliskt blodtryck (mmHg)")
+    ax.set_yticks([0, 1], labels)
+    ax.grid(True, axis="x", alpha=0.3)
+    fig.tight_layout()
+    return fig, ax
