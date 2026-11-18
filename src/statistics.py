@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from math import sqrt
+from scipy import stats
 
 def calculate_descriptive_stats(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -105,3 +106,30 @@ def ci_mean_bootstrap(x, B=1000, confidence=0.95, seed=89):
     )
 
     return lo, hi, float(np.mean(x))
+
+
+
+def test_smoking_blood_pressure(df):
+    """
+    Undersöker om rökare har högre genomsnittligt systoliskt
+    blodtryck än icke-rökare med ett ensidigt Welch's t-test.
+
+    Returnerar gruppernas medelvärden, skillnaden,
+    t-statistiken och p-värdet.
+    """
+    smokers_bp = df.loc[df["smoker"] == "Yes", "systolic_bp"]           # Delar upp blodtrycksvärdena i två grupper
+    non_smokers_bp = df.loc[df["smoker"] == "No", "systolic_bp"]
+
+    mean_smokers = smokers_bp.mean()                                    # Beräknar medelvärdet för varje grupp
+    mean_non_smokers = non_smokers_bp.mean()
+
+    mean_difference = mean_smokers - mean_non_smokers                   # Beräknar skillnaden mellan gruppernas medelvärden
+
+    t_stat, p_value = stats.ttest_ind(                                  # Genomför ett ensidigt Welch's t-test
+        smokers_bp,
+        non_smokers_bp,
+        equal_var=False,
+        alternative="greater"
+    )
+
+    return mean_smokers, mean_non_smokers, mean_difference, t_stat, p_value
