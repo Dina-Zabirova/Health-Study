@@ -133,3 +133,53 @@ def test_smoking_blood_pressure(df):
     )
 
     return mean_smokers, mean_non_smokers, mean_difference, t_stat, p_value
+
+
+
+def simulate_test_power(df, effect=5, n_simulations=1000, seed=89):
+    """
+    Uppskattar styrkan hos ett ensidigt Welch's t-test
+    genom simulering med en förutbestämd skillnad i medelblodtryck.
+    """
+    smokers_bp = df.loc[df["smoker"] == "Yes", "systolic_bp"]                   # Delar upp blodtrycksvärdena i två grupper
+    non_smokers_bp = df.loc[df["smoker"] == "No", "systolic_bp"]
+
+    n_smokers = len(smokers_bp)                                                 # Hämtar gruppernas storlek och standardavvikelse
+    n_non_smokers = len(non_smokers_bp)
+
+    std_smokers = smokers_bp.std()
+    std_non_smokers = non_smokers_bp.std()
+
+    mean_non_smokers = non_smokers_bp.mean()                                    # Anger medelvärden med en förutbestämd skillnad
+    mean_smokers = mean_non_smokers + effect
+
+    rng = np.random.default_rng(seed)                                           # Skapar en slumpgenerator
+
+    significant_tests = 0                                                       # Räknar antalet signifikanta test
+
+    for _ in range(n_simulations):
+        simulated_smokers = rng.normal(                                         # Simulerar blodtryck för båda grupperna
+            loc=mean_smokers,
+            scale=std_smokers,
+            size=n_smokers
+        )
+
+        simulated_non_smokers = rng.normal(
+            loc=mean_non_smokers,
+            scale=std_non_smokers,
+            size=n_non_smokers
+        )
+
+        t_stat, p_value = stats.ttest_ind(                                      # Genomför samma ensidiga t-test som tidigare
+            simulated_smokers,
+            simulated_non_smokers,
+            equal_var=False,
+            alternative="greater"
+        )
+
+        if p_value < 0.05:                                                      # Räknar test som hittar en signifikant skillnad
+            significant_tests += 1
+
+    power = significant_tests / n_simulations                                   # Beräknar testets uppskattade styrka
+
+    return power

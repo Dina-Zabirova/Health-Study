@@ -1,5 +1,8 @@
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
+from matplotlib.axes import Axes
 
 def plot_blood_pressure(df: pd.DataFrame) -> tuple[Figure, Axes]:
     """
@@ -28,7 +31,7 @@ def plot_blood_pressure(df: pd.DataFrame) -> tuple[Figure, Axes]:
     return fig, ax
 
 
-def plot_weight_by_sex(df: pd.DataFrame) -> tuple[Figure, Axes]:
+def plot_weight_by_sex(df: pd.DataFrame) -> tuple[Figure, np.ndarray]:
     """
     Skapar ett boxplot och ett violinplot för att visa
     viktfördelningen bland kvinnor och män.
