@@ -69,7 +69,6 @@ def plot_regression_results(y_values, y_pred):
     linestyle="--",
     label="Residual = 0"
     )
-    axes[1].axhline(0, color="red", linestyle="--")
     axes[1].set_title("Residualdiagram")
     axes[1].set_xlabel("Predikterat blodtryck (mmHg)")
     axes[1].set_ylabel("Residual (mmHg)")
